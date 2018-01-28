@@ -26,9 +26,9 @@ void print_usage(void)
 	cout << "      updspeed TARGET_HOST PORT_NUMBER" << endl;
 	cout << endl;
 	cout << "    ie:" << endl;
-	cout << "      Listen mode:   udpspeed www 342" << endl;
-	cout << "      Listen mode:   udpspeed 10.200.67.1 950" << endl;
-	cout << "      Talk mode:     udpspeed 1920" << endl;
+	cout << "      Listen mode: udpspeed 1920" << endl;
+	cout << "      Talk mode:   udpspeed www 342" << endl;
+	cout << "      Talk mode:   udpspeed 10.200.67.1 950" << endl;
 	cout << endl;
 }
 
