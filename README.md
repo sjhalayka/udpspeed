@@ -1,3 +1,3 @@
 # udpspeed
 
-Public domain.
+Public domain. Line speed tester.
