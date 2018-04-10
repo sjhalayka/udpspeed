@@ -1,1 +1,3 @@
 # udpspeed
+
+Public domain.
