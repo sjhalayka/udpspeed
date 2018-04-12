@@ -199,7 +199,7 @@ int main(int argc, char **argv)
 
 		while (!stop)
 		{
-			if (SOCKET_ERROR == (sendto(udp_socket, tx_buf, tx_buf_size, 0, (struct	sockaddr*)result->ai_addr, sizeof(struct sockaddr))))
+			if (SOCKET_ERROR == (sendto(udp_socket, tx_buf, tx_buf_size, 0, result->ai_addr, sizeof(struct sockaddr))))
 			{
 
 				if (!stop)
