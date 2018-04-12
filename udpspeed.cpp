@@ -186,7 +186,7 @@ int main(int argc, char **argv)
 			cout << "  getaddrinfo error." << endl;
 			freeaddrinfo(result);
 			cleanup();
-			return 1;
+			return 2;
 		}
 
 		if (INVALID_SOCKET == (udp_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)))
