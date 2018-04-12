@@ -1,4 +1,5 @@
 #include <winsock2.h>
+#include <Ws2tcpip.h>
 #include <windows.h>
 #pragma comment(lib, "ws2_32")
 
@@ -10,6 +11,7 @@ using std::cout;
 using std::endl;
 using std::string;
 using std::istringstream;
+using std::ostringstream;
 using std::ios;
 
 bool stop = false;
@@ -143,7 +145,7 @@ void cleanup(void)
 
 int main(int argc, char **argv)
 {
-	cout << endl << "udpspeed 1.1 - UDP speed tester" << endl << "Copyright 2002/2011, Shawn Halayka" << endl << endl;
+	cout << endl << "udpspeed 1.2 - UDP speed tester" << endl << "Copyright 2002/2018, Shawn Halayka" << endl << endl;
 
 	program_mode mode = listen_mode;
 
@@ -167,39 +169,47 @@ int main(int argc, char **argv)
 	{
 		cout << "  Sending on port " << port_number << " - CTRL+C to exit." << endl;
 
-		struct sockaddr_in their_addr;
-		struct hostent *he = 0;
-		he = gethostbyname(target_host_string.c_str());
+		struct addrinfo hints;
+		struct addrinfo *result;
 
-		if (NULL == he)
+		memset(&hints, 0, sizeof(struct addrinfo));
+		hints.ai_family = AF_INET;
+		hints.ai_socktype = SOCK_DGRAM;
+		hints.ai_flags = 0;
+		hints.ai_protocol = IPPROTO_UDP;
+
+		ostringstream oss;
+		oss << port_number;
+
+		if(0 != getaddrinfo(target_host_string.c_str(), oss.str().c_str(), &hints, &result))
 		{
-			cout << "  Could not resolve target host." << endl;
+			cout << "  getaddrinfo error." << endl;
+			freeaddrinfo(result);
 			cleanup();
-			return 2;
+			return 1;
 		}
 
-		their_addr.sin_family = AF_INET;
-		their_addr.sin_port = htons((unsigned short int)port_number);
-		their_addr.sin_addr = *((struct in_addr *)he->h_addr);
-		memset(&(their_addr.sin_zero), '\0', 8);
-
-		if (INVALID_SOCKET == (udp_socket = socket(AF_INET, SOCK_DGRAM, 0)))
+		if (INVALID_SOCKET == (udp_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)))
 		{
 			cout << "  Could not allocate a new socket." << endl;
+			freeaddrinfo(result);
 			cleanup();
 			return 3;
 		}
 
 		while (!stop)
 		{
-			if (SOCKET_ERROR == (sendto(udp_socket, tx_buf, tx_buf_size, 0, (struct sockaddr *)&their_addr, sizeof(struct sockaddr))))
+			if (SOCKET_ERROR == (sendto(udp_socket, tx_buf, tx_buf_size, 0, (struct	sockaddr*)result->ai_addr, sizeof(struct sockaddr))))
 			{
+
 				if (!stop)
 					cout << " (TX ERR)" << endl;
 
 				break;
 			}
 		}
+
+		freeaddrinfo(result);
 	}
 	else if (listen_mode == mode)
 	{
